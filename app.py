@@ -4,6 +4,7 @@
 
 from email.policy import default
 import json
+from xmlrpc.client import DateTime
 import dateutil.parser
 import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for
@@ -62,6 +63,16 @@ class Artist(db.Model):
     website_link = db.Column(db.String(120), nullable=False)
     seeking_venue = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120), nullable=False)
+
+
+class Show(db.Model):
+    __tablename__ = 'Show'
+    id = db.Column(db.Integer, primary_key=True)
+    artist_id = db.Column(
+        db.Integer, db.ForeignKey("Artist.id"), nullable=False)
+    venue_id = db.Column(
+        db.Integer, db.ForeignKey("Venue.id"), nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.today())
 
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
