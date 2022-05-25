@@ -461,11 +461,39 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
     # called upon submitting the new artist listing form
-    # TODO: insert form data as a new Venue record in the db, instead
+    # insert form data as a new Artist record in the db, instead
+    #
+    # Get the submitted form
+    artist = ArtistForm(request.form)
+
+    # create Artist if the form is validated -> properly submitted
+    if artist.validate():
+        try:
+            db.session.add(
+                Artist(
+                    name=artist.name.data,
+                    city=artist.city.data,
+                    genres=artist.genres.data,
+                    phone=artist.phone.data,
+                    state=artist.state.data,
+                    facebook_link=artist.facebook_link.data,
+                    website_link=artist.website_link.data,
+                    image_link=artist.image_link.data,
+                    seeking_venue=artist.seeking_venue.data,
+                    seeking_description=artist.seeking_description.data
+                )
+            )
+            db.session.commit()
+            flash('Artist ' + request.form['name'] +
+                  ' was successfully listed!')
+        except:
+            db.session.rollback()
+        finally:
+            db.session.close()
+
     # TODO: modify data to be the data object returned from db insertion
 
     # on successful db insert, flash success
-    flash('Artist ' + request.form['name'] + ' was successfully listed!')
     # TODO: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
     return render_template('pages/home.html')
