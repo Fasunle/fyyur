@@ -497,8 +497,6 @@ def create_artist_submission():
 @app.route('/shows')
 def shows():
     # displays list of shows at /shows
-    # TODO: replace with real venues data.
-
     shows = Show.query.all()
 
     eachShow = {}
