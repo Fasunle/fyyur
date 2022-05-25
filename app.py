@@ -465,6 +465,8 @@ def create_artist_submission():
     #
     # Get the submitted form
     artist = ArtistForm(request.form)
+    error = False
+    data = {"name": ''}
 
     # create Artist if the form is validated -> properly submitted
     if artist.validate():
@@ -483,19 +485,27 @@ def create_artist_submission():
                     seeking_description=artist.seeking_description.data
                 )
             )
+            # persist the change
             db.session.commit()
-            flash('Artist ' + request.form['name'] +
-                  ' was successfully listed!')
         except:
+            # error occured
+            error = True
             db.session.rollback()
         finally:
             db.session.close()
 
-    # TODO: modify data to be the data object returned from db insertion
+        # modify data to be the data object returned from db insertion
+        data['name'] = artist.name.data
 
-    # on successful db insert, flash success
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
+        if error:
+            # on unsuccessful db insert, flash an error instead.
+            flash('An error occurred. Artist ' +
+                  data['name'] + ' could not be listed.')
+        else:
+            # on successful db insert, flash success
+            flash('Artist ' + request.form['name'] +
+                  ' was successfully listed!')
+
     return render_template('pages/home.html')
 
 
