@@ -78,7 +78,6 @@ class Show(db.Model):
     start_time = db.Column(db.DateTime, default=datetime.today())
 
 
-# TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 #----------------------------------------------------------------------------#
 # Filters.
@@ -105,6 +104,29 @@ app.jinja_env.filters['datetime'] = format_datetime
 def index():
     return render_template('pages/home.html')
 
+
+def past_or_upcoming_shows():
+    '''
+    Sort shows into past show and upcoming show.
+
+    It uses Show Model under ther hood
+    '''
+
+    past = []
+    upcoming = []
+    data = {"past": past, "upcoming": upcoming}
+    # fetch the shows from the database
+    shows = Show.query.all()
+
+    # type casting ensure no error since database had converted start_time to string
+    current_time = datetime.now()
+
+    for show in shows:
+        if show.start_time > current_time:
+            data['upcoming'].append(show)
+        else:
+            data['past'].append(show)
+    return data
 
 #  Venues
 #  ----------------------------------------------------------------
