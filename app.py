@@ -47,6 +47,7 @@ class Venue(db.Model):
     website_link = db.Column(db.String(120), nullable=False)
     seeking_talent = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120), nullable=False)
+    show = db.relationship("Show", cascade="all, delete-orphan")
 
 
 class Artist(db.Model):
@@ -63,6 +64,7 @@ class Artist(db.Model):
     website_link = db.Column(db.String(120), nullable=False)
     seeking_venue = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120), nullable=False)
+    show = db.relationship("Show", cascade="all, delete-orphan")
 
 
 class Show(db.Model):
