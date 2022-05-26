@@ -50,6 +50,7 @@ class Venue(db.Model):
     show = db.relationship("Show", cascade="all, delete-orphan")
 
 
+# Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 class Artist(db.Model):
     __tablename__ = 'Artist'
 
