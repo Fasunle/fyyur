@@ -249,14 +249,46 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-    # TODO: insert form data as a new Venue record in the db, instead
-    # TODO: modify data to be the data object returned from db insertion
+    # insert form data as a new Venue record in the db, instead
+    # modify data to be the data object returned from db insertion
+    venue = VenueForm(request.form)
+    name = venue.name.data
+    error = False
 
-    # on successful db insert, flash success
-    flash('Venue ' + request.form['name'] + ' was successfully listed!')
-    # TODO: on unsuccessful db insert, flash an error instead.
-    # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+    if venue.validate():
+        try:
+            db.session.add(
+                Venue(
+                    name=venue.name.data,
+                    city=venue.city.data,
+                    genres=venue.genres.data,
+                    phone=venue.phone.data,
+                    state=venue.state.data,
+                    address=venue.address.data,
+                    facebook_link=venue.facebook_link.data,
+                    website_link=venue.website_link.data,
+                    image_link=venue.image_link.data,
+                    seeking_talent=venue.seeking_talent.data,
+                    seeking_description=venue.seeking_description.data
+                )
+            )
+            db.session.commit()
+        except:
+            db.session.rollback()
+            error = True
+        finally:
+            db.session.close()
+
+        data = {name}
+
+        if error:
+            # on unsuccessful db insert, flash an error instead.
+            flash('An error occurred. Venue ' +
+                  data.name + ' could not be listed.')
+        else:
+            # on successful db insert, flash success
+            flash('Venue ' + request.form['name'] +
+                  ' was successfully listed!')
     return render_template('pages/home.html')
 
 
