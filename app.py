@@ -131,31 +131,61 @@ def past_or_upcoming_shows():
 #  Venues
 #  ----------------------------------------------------------------
 
+
 @app.route('/venues')
 def venues():
-    # TODO: replace with real venues data.
-    #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-    data = [{
-        "city": "San Francisco",
-        "state": "CA",
-        "venues": [{
-            "id": 1,
-            "name": "The Musical Hop",
-            "num_upcoming_shows": 0,
-        }, {
-            "id": 3,
-            "name": "Park Square Live Music & Coffee",
-            "num_upcoming_shows": 1,
-        }]
-    }, {
-        "city": "New York",
-        "state": "NY",
-        "venues": [{
-            "id": 2,
-            "name": "The Dueling Pianos Bar",
-            "num_upcoming_shows": 0,
-        }]
-    }]
+    # replace with real venues data.
+    unique_city_names = []
+    data = []
+
+    venues = Venue.query.all()
+
+    upcoming_shows = past_or_upcoming_shows()["upcoming"]
+
+    # get unique venues by the venue name
+    for venue in venues:
+        
+        upcoming = 0
+        # calculate the number ofshow that each venue has
+        for show in upcoming_shows:
+            
+            if show.venue_id == venue.id:
+                
+                upcoming += 1
+
+        if venue.city in unique_city_names:
+            
+            already_present_at_index = unique_city_names.index(venue.city)
+            
+            present = data[already_present_at_index]["venues"]
+            
+            present.append(
+                {
+                    "id": venue.id,
+                    "name": venue.name,
+                    "num_upcoming_shows": upcoming
+                }
+            )
+        else:
+            # construct a unique list
+            unique_city_names.append(venue.city)
+            
+            # format the data as this
+            data.append({
+                "city": venue.city,
+                "state": venue.state,
+                "venues": [
+                    {
+                        "id": venue.id,
+                        "name": venue.name,
+                        "num_upcoming_shows": upcoming
+                    }
+                ]
+            })
+            
+    # confirms that the sorting is correct
+    assert len(data) == len(unique_city_names)
+
     return render_template('pages/venues.html', areas=data)
 
 
