@@ -511,27 +511,34 @@ def edit_artist_submission(artist_id):
     # artist record with ID <artist_id> using the new attributes
 
     artist = ArtistForm(request.form)
-    
-    old_artist_data = Artist.query.filter_by(id=artist_id).first()
-
-    # update the data with form data (artist)
-    old_artist_data.name = artist.name.data
-    old_artist_data.city = artist.city.data
-    old_artist_data.phone = artist.phone.data
-    old_artist_data.state = artist.state.data
-    old_artist_data.genres = artist.genres.data
-    old_artist_data.image_link = artist.image_link.data
-    old_artist_data.facebook_link = artist.facebook_link.data
-    old_artist_data.seeking_venue = artist.seeking_venue.data
-    old_artist_data.seeking_description = artist.seeking_description.data
+    error = False
 
     try:
+        old_artist_data = Artist.query.filter_by(id=artist_id).first()
+
+        # update the data with form data (artist)
+        old_artist_data.name = artist.name.data
+        old_artist_data.city = artist.city.data
+        old_artist_data.phone = artist.phone.data
+        old_artist_data.state = artist.state.data
+        old_artist_data.genres = artist.genres.data
+        old_artist_data.image_link = artist.image_link.data
+        old_artist_data.facebook_link = artist.facebook_link.data
+        old_artist_data.seeking_venue = artist.seeking_venue.data
+        old_artist_data.seeking_description = artist.seeking_description.data
+
         db.session.add(old_artist_data)
         db.session.commit()
     except:
         db.session.rollback()
+        error = True
     finally:
         db.session.close()
+
+    if error:
+        flash("Unable to edit the artist with id " + str(artist_id))
+    else:
+        flash("Editted the artist with id " + str(artist_id) + " successfully")
 
     return redirect(url_for('show_artist', artist_id=artist_id))
 
