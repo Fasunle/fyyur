@@ -75,8 +75,7 @@ class Show(db.Model):
         db.Integer, db.ForeignKey("Artist.id"), nullable=False)
     venue_id = db.Column(
         db.Integer, db.ForeignKey("Venue.id"), nullable=False)
-    start_time = db.Column(db.DateTime, default=datetime.today())
-
+    start_time = db.Column(db.DateTime, default=datetime.now())
 
 
 #----------------------------------------------------------------------------#
@@ -144,21 +143,21 @@ def venues():
 
     # get unique venues by the venue name
     for venue in venues:
-        
+
         upcoming = 0
         # calculate the number ofshow that each venue has
         for show in upcoming_shows:
-            
+
             if show.venue_id == venue.id:
-                
+
                 upcoming += 1
 
         if venue.city in unique_city_names:
-            
+
             already_present_at_index = unique_city_names.index(venue.city)
-            
+
             present = data[already_present_at_index]["venues"]
-            
+
             present.append(
                 {
                     "id": venue.id,
@@ -169,7 +168,7 @@ def venues():
         else:
             # construct a unique list
             unique_city_names.append(venue.city)
-            
+
             # format the data as this
             data.append({
                 "city": venue.city,
@@ -182,7 +181,7 @@ def venues():
                     }
                 ]
             })
-            
+
     # confirms that the sorting is correct
     assert len(data) == len(unique_city_names)
 
@@ -546,21 +545,9 @@ def edit_artist_submission(artist_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
     form = VenueForm()
-    venue = {
-        "id": 1,
-        "name": "The Musical Hop",
-        "genres": ["Jazz", "Reggae", "Swing", "Classical", "Folk"],
-        "address": "1015 Folsom Street",
-        "city": "San Francisco",
-        "state": "CA",
-        "phone": "123-123-1234",
-        "website": "https://www.themusicalhop.com",
-        "facebook_link": "https://www.facebook.com/TheMusicalHop",
-        "seeking_talent": True,
-        "seeking_description": "We are on the lookout for a local artist to play every two weeks. Please call us.",
-        "image_link": "https://images.unsplash.com/photo-1543900694-133f37abaaa5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60"
-    }
-    # TODO: populate form with values from venue with ID <venue_id>
+    venue = Venue.query.get(venue_id)
+
+    # populate form with values from venue with ID <venue_id>
     return render_template('forms/edit_venue.html', form=form, venue=venue)
 
 
