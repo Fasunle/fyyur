@@ -170,7 +170,7 @@ def venues():
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
     #  implement search on artists with partial string search. Ensure it is
-    # TODO: case-insensitive.
+    # case-insensitive.
     #  seach for Hop should return "The Musical Hop".
     # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
     search_term = request.form.get('search_term', '')
@@ -364,7 +364,7 @@ def artists():
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
     # implement search on artists with partial string search. Ensure it is
-    # TODO: case-insensitive.
+    # case-insensitive.
     # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
     # search for "band" should return "The Wild Sax Band".
 
