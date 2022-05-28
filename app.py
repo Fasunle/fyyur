@@ -444,7 +444,7 @@ def show_artist(artist_id):
                         "venue_id": venue.id,
                         "venue_name": venue.name.title(),
                         "venue_image_link": venue.image_link,
-                        "start_time": show.start_time
+                        "start_time": str(show.start_time)
                     }
                 )
         each_artist["past_shows_count"] = len(each_artist["past_shows"])
