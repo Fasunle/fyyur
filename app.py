@@ -173,8 +173,9 @@ def search_venues():
     # TODO: case-insensitive.
     #  seach for Hop should return "The Musical Hop".
     # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
-    search_term = str(request.form.get('search_term', '')).lower()
-    found_venues = Venue.query.filter(Venue.name.op("~")(search_term)).all()
+    search_term = request.form.get('search_term', '')
+    found_venues = Venue.query.filter(
+        Venue.name.op("~")(search_term.lower())).all()
     shows = Show.query.all()
     upcoming_shows = past_or_upcoming_shows(shows)["upcoming"]
     response = {"data": [], "count": len(found_venues)}
@@ -367,8 +368,9 @@ def search_artists():
     # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
     # search for "band" should return "The Wild Sax Band".
 
-    search_term = str(request.form.get('search_term', '')).lower()
-    found_artists = Artist.query.filter(Artist.name.op("~")(search_term)).all()
+    search_term = request.form.get('search_term', '')
+    found_artists = Artist.query.filter(
+        Artist.name.op("~")(search_term.lower())).all()
     shows = Show.query.all()
     upcoming_shows = past_or_upcoming_shows(shows)["upcoming"]
     response = {"data": [], "count": len(found_artists)}
