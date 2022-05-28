@@ -258,8 +258,6 @@ def show_venue(venue_id):
         all_venues.append(each_venue)
         each_venue = {}    # reset
 
-    print("\n", all_venues[0], "\n")
-
     data = list(filter(lambda d: d['id'] ==
                 venue_id, all_venues))[0]
     return render_template('pages/show_artist.html', artist=data)
@@ -338,7 +336,6 @@ def delete_venue(venue_id):
         db.session.commit()
     except:
         db.session.rollback()
-        # print(sys.exc_info())
         error = True
     finally:
         db.session.close()
@@ -454,8 +451,6 @@ def show_artist(artist_id):
         # put the complete data into all_artists array
         all_artists.append(each_artist)
         each_artist = {}    # reset
-
-    # print("\n", all_artists, "\n")
 
     data = list(filter(lambda d: d['id'] ==
                 artist_id, all_artists))[0]
@@ -661,10 +656,6 @@ def create_show_submission():
     # called to create new shows in the db, upon submitting new show listing form
     # insert form data as a new Show record in the db, instead
     show = ShowForm(request.form)
-
-    # print('\n----------------\n')
-    # print(show.artist_id.data)
-    # print('\n----------------\n')
 
     if show.validate():
         error = False
