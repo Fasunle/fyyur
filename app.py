@@ -140,7 +140,7 @@ def venues():
             present.append(
                 {
                     "id": venue.id,
-                    "name": venue.name,
+                    "name": venue.name.title(),
                     "num_upcoming_shows": upcoming
                 }
             )
@@ -155,7 +155,7 @@ def venues():
                 "venues": [
                     {
                         "id": venue.id,
-                        "name": venue.name,
+                        "name": venue.name.title(),
                         "num_upcoming_shows": upcoming
                     }
                 ]
@@ -183,7 +183,7 @@ def search_venues():
         response["data"].append(
             {
                 "id": venue.id,
-                "name": venue.name,
+                "name": venue.name.title(),
                 "num_upcomint_shows": len(
                     [upcoming_show.venue_id is venue.id for upcoming_show in upcoming_shows]
                 )
@@ -209,7 +209,7 @@ def show_venue(venue_id):
 
         each_venue["id"] = venue.id
         each_venue["city"] = venue.city
-        each_venue["name"] = venue.name
+        each_venue["name"] = venue.name.title()
         each_venue["phone"] = venue.phone
         each_venue["state"] = venue.state
         each_venue["genres"] = get_genres(venue.genres)
@@ -235,7 +235,7 @@ def show_venue(venue_id):
                 each_venue["past_shows"].append(
                     {
                         "artist_id": artist.id,
-                        "artist_name": artist.name,
+                        "artist_name": artist.name.title(),
                         "artist_image_link": artist.image_link,
                         "start_time": str(show.start_time)
                     }
@@ -245,7 +245,7 @@ def show_venue(venue_id):
                 each_venue["upcoming_shows"].append(
                     {
                         "artist_id": artist.id,
-                        "artist_name": artist.name,
+                        "artist_name": artist.name.title(),
                         "artist_image_link": artist.image_link,
                         "start_time": str(show.start_time)
                     }
@@ -284,7 +284,7 @@ def create_venue_submission():
         try:
             db.session.add(
                 Venue(
-                    name=venue.name.data,
+                    name=venue.name.data.lower(),
                     city=venue.city.data,
                     genres=venue.genres.data,
                     phone=venue.phone.data,
@@ -377,7 +377,7 @@ def search_artists():
         response["data"].append(
             {
                 "id": artist.id,
-                "name": artist.name,
+                "name": artist.name.title(),
                 "num_upcomint_shows": len(
                     [upcoming_show.artist_id is artist.id for upcoming_show in upcoming_shows]
                 )
@@ -403,7 +403,7 @@ def show_artist(artist_id):
 
         each_artist["id"] = artist.id
         each_artist["city"] = artist.city
-        each_artist["name"] = artist.name
+        each_artist["name"] = artist.name.title()
         each_artist["phone"] = artist.phone
         each_artist["state"] = artist.state
         each_artist["genres"] = get_genres(artist.genres)
@@ -429,7 +429,7 @@ def show_artist(artist_id):
                 each_artist["past_shows"].append(
                     {
                         "venue_id": venue.id,
-                        "venue_name": venue.name,
+                        "venue_name": venue.name.title(),
                         "venue_image_link": venue.image_link,
                         "start_time": show.start_time
                     }
@@ -439,7 +439,7 @@ def show_artist(artist_id):
                 each_artist["upcoming_shows"].append(
                     {
                         "venue_id": venue.id,
-                        "venue_name": venue.name,
+                        "venue_name": venue.name.title(),
                         "venue_image_link": venue.image_link,
                         "start_time": show.start_time
                     }
@@ -466,6 +466,7 @@ def edit_artist(artist_id):
 
     # populate form with fields from artist with ID <artist_id>
     artist = Artist.query.filter_by(id=artist_id).first()
+    artist.name.title()
 
     return render_template('forms/edit_artist.html', form=form, artist=artist)
 
@@ -482,7 +483,7 @@ def edit_artist_submission(artist_id):
         old_artist_data = Artist.query.filter_by(id=artist_id).first()
 
         # update the data with form data (artist)
-        old_artist_data.name = artist.name.data
+        old_artist_data.name = artist.name.data.lower()
         old_artist_data.city = artist.city.data
         old_artist_data.phone = artist.phone.data
         old_artist_data.state = artist.state.data
@@ -529,7 +530,7 @@ def edit_venue_submission(venue_id):
         old_venue_data = Venue.query.filter_by(id=venue_id).first()
 
         # update the data with form data (venue)
-        old_venue_data.name = venue.name.data
+        old_venue_data.name = venue.name.data.lower()
         old_venue_data.city = venue.city.data
         old_venue_data.phone = venue.phone.data
         old_venue_data.state = venue.state.data
@@ -572,14 +573,14 @@ def create_artist_submission():
     # Get the submitted form
     artist = ArtistForm(request.form)
     error = False
-    name = artist.name.data
+    name = artist.name.data.title()
 
     # create Artist if the form is validated -> properly submitted
     if artist.validate():
         try:
             db.session.add(
                 Artist(
-                    name=artist.name.data,
+                    name=artist.name.data.lower(),
                     city=artist.city.data,
                     genres=artist.genres.data,
                     phone=artist.phone.data,
@@ -630,9 +631,9 @@ def shows():
         # get artist and venue for a given Show
         artist = Artist.query.filter_by(id=show.artist_id).first()
         venue = Venue.query.filter_by(id=show.venue_id).first()
-        eachShow['artist_name'] = artist.name
-        eachShow['venue_name'] = venue.name
-        eachShow['venue_id'] = venue.name
+        eachShow['artist_name'] = artist.name.title()
+        eachShow['venue_name'] = venue.name.title()
+        eachShow['venue_id'] = venue.id
         eachShow['artist_id'] = artist.id
         eachShow['start_time'] = str(show.start_time)
         eachShow['artist_image_link'] = artist.image_link
