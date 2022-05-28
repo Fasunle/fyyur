@@ -1,6 +1,12 @@
 """Utility file for helper functions
 """
 
+# --------------------------------------------------------
+#   IMPORT
+# --------------------------------------------------------
+
+from datetime import datetime
+
 
 def get_genres(genres: str = "") -> list:
     '''
@@ -30,3 +36,25 @@ def get_genres(genres: str = "") -> list:
     # if the genres is a single field e.g Classical
     else:
         return result.append(genres)
+
+
+def past_or_upcoming_shows(shows: tuple) -> dict:
+    '''
+    Sort shows into past show and upcoming show.
+    It uses Show Model under ther hood
+    '''
+
+    past = []
+    upcoming = []
+    data = {"past": past, "upcoming": upcoming}
+    # fetch the shows from the database
+
+    # type casting ensure no error since database had converted start_time to string
+    current_time = datetime.now()
+
+    for show in shows:
+        if show.start_time > current_time:
+            data['upcoming'].append(show)
+        else:
+            data['past'].append(show)
+    return data
