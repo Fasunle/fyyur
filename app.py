@@ -15,6 +15,7 @@ from logging import Formatter, FileHandler
 from flask_wtf import Form
 from forms import *
 from flask_migrate import Migrate
+from utils import get_genres, past_or_upcoming_shows
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -104,29 +105,6 @@ def index():
     return render_template('pages/home.html')
 
 
-def past_or_upcoming_shows():
-    '''
-    Sort shows into past show and upcoming show.
-
-    It uses Show Model under ther hood
-    '''
-
-    past = []
-    upcoming = []
-    data = {"past": past, "upcoming": upcoming}
-    # fetch the shows from the database
-    shows = Show.query.all()
-
-    # type casting ensure no error since database had converted start_time to string
-    current_time = datetime.now()
-
-    for show in shows:
-        if show.start_time > current_time:
-            data['upcoming'].append(show)
-        else:
-            data['past'].append(show)
-    return data
-
 #  Venues
 #  ----------------------------------------------------------------
 
@@ -138,8 +116,9 @@ def venues():
     data = []
 
     venues = Venue.query.all()
+    shows = Show.query.all()
 
-    upcoming_shows = past_or_upcoming_shows()["upcoming"]
+    upcoming_shows = past_or_upcoming_shows(shows)["upcoming"]
 
     # get unique venues by the venue name
     for venue in venues:
@@ -224,7 +203,7 @@ def show_venue(venue_id):
         each_venue["name"] = venue.name
         each_venue["phone"] = venue.phone
         each_venue["state"] = venue.state
-        each_venue["genres"] = venue.genres
+        each_venue["genres"] = get_genres(venue.genres)
         each_venue["address"] = venue.address
         each_venue["website"] = venue.website_link
         each_venue["image_link"] = venue.image_link
@@ -412,7 +391,7 @@ def show_artist(artist_id):
         each_artist["name"] = artist.name
         each_artist["phone"] = artist.phone
         each_artist["state"] = artist.state
-        each_artist["genres"] = artist.genres
+        each_artist["genres"] = get_genres(artist.genres)
         each_artist["website"] = artist.website_link
         each_artist["image_link"] = artist.image_link
         each_artist["facebook_link"] = artist.facebook_link
