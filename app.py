@@ -664,6 +664,7 @@ def create_show_submission():
                 Show(
                     artist_id=show.artist_id.data,
                     venue_id=show.venue_id.data,
+                    start_time=show.start_time.data
                 )
             )
             db.session.commit()
