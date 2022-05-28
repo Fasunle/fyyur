@@ -425,7 +425,7 @@ def show_artist(artist_id):
         for show in shows:
 
             # get the corresponding venue data for each show
-            venue = Venue.query.get(id=show.venue_id)
+            venue = Venue.query.get(show.venue_id)
 
             # add past show feilds to the artists data
             if show.start_time < datetime.now():
