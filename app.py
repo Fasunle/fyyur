@@ -185,7 +185,6 @@ def search_venues():
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-    # Todo: Genres feature
     # shows the venue page with the given venue_id
     # replace with real venue data from the venues table, using venue_id
     all_venues = []
@@ -375,8 +374,6 @@ def show_artist(artist_id):
     # shows the artist page with the given artist_id
     # replace with real artist data from the artist table, using artist_id
 
-    # Todo: handle the genres to display if it is multi-field
-
     all_artists = []
     each_artist = {}
 
@@ -508,8 +505,6 @@ def edit_venue(venue_id):
 def edit_venue_submission(venue_id):
     # take values from the form submitted, and update existing
     # venue record with ID <venue_id> using the new attributes
-
-    # Todo: Genres feature
 
     venue = VenueForm(request.form)
     error = False
