@@ -417,6 +417,9 @@ def show_artist(artist_id):
         each_artist["past_shows_count"] = 0
         each_artist["upcoming_shows_count"] = 0
 
+        if artist_id is not artist.id:
+            continue
+
         shows = Show.query.filter_by(artist_id=artist_id).all()
         # loop through the show table
         for show in shows:
