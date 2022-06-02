@@ -33,6 +33,7 @@ class Artist(db.Model):
 
     def fetch_all() -> list:
         '''Fetcl all artists and return json format'''
+
         artists = Artist.query.all()
 
         formated_artists = [
@@ -53,3 +54,20 @@ class Artist(db.Model):
         ]
 
         return formated_artists
+
+    def fetch(id: int):
+        '''Fetch and format artist with a given id'''
+
+        artist = Artist.query.filter_by(id=id).first()
+        return jsonify({
+            "id": artist.id,
+            "city": artist.city,
+            "name": artist.name,
+            "phone": artist.phone,
+            "state": artist.state,
+            "genres": artist.genres,
+            "website_link": artist.website_link,
+            "facebook_link": artist.facebook_link,
+            "seeking_venue": artist.seeking_venue,
+            "seeking_description": artist.seeking_description
+        })
