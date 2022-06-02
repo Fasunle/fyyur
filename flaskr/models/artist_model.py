@@ -27,45 +27,43 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String(120), nullable=False)
     show = db.relationship("Show", cascade="all, delete-orphan")
 
-    def fetch_all() -> list:
-        '''Fetcl all artists and return json format'''
+    def create(self, name: str):
+        """
+            Create a new Artist
 
-        artists = Artist.query.all()
+            Args:
+                name (string): Name of the artist. It is just used for flash message
 
-        formated_artists = [
-            jsonify({
-                "id": artist.id,
-                "city": artist.city,
-                "name": artist.name,
-                "phone": artist.phone,
-                "state": artist.state,
-                "genres": artist.genres,
-                "website_link": artist.website_link,
-                "facebook_link": artist.facebook_link,
-                "seeking_venue": artist.seeking_venue,
-                "seeking_description": artist.seeking_description
-            })
+            Returns:
+                {
+                    "success": error,
+                    "message": message
+                }
+        """
+        error = False
+        message = ""
 
-            for artist in artists
-        ]
+        try:
+            db.session.add(self)
+            db.session.commit()
+            message = 'Artist ' + name + ' was successfully listed!'
+        except:
+            error = True
+            message = 'An error occurred. Artist ' + name + ' could not be listed.'
+            db.session.rollback()
+        finally:
+            db.session.close()
 
-        return formated_artists
+        if error:
+            # on unsuccessful db insert, flash an error instead.
+            flash(message)
+        else:
+            # on successful db insert, flash success
+            flash(message)
 
-    def fetch(id: int):
-        '''Fetch and format artist with a given id'''
-
-        artist = Artist.query.filter_by(id=id).first()
         return jsonify({
-            "id": artist.id,
-            "city": artist.city,
-            "name": artist.name,
-            "phone": artist.phone,
-            "state": artist.state,
-            "genres": artist.genres,
-            "website_link": artist.website_link,
-            "facebook_link": artist.facebook_link,
-            "seeking_venue": artist.seeking_venue,
-            "seeking_description": artist.seeking_description
+            "success": not error,
+            "message": message
         })
 
     def delete(id):
@@ -105,41 +103,43 @@ class Artist(db.Model):
             "message": message
         })
 
-    def create(self, name: str):
-        """
-            Create a new Artist
+    def fetch(id: int):
+        '''Fetch and format artist with a given id'''
 
-            Args:
-                name (string): Name of the artist. It is just used for flash message
-
-            Returns:
-                {
-                    "success": error,
-                    "message": message
-                }
-        """
-        error = False
-        message = ""
-
-        try:
-            db.session.add(self)
-            db.session.commit()
-            message = 'Artist ' + name + ' was successfully listed!'
-        except:
-            error = True
-            message = 'An error occurred. Artist ' + name + ' could not be listed.'
-            db.session.rollback()
-        finally:
-            db.session.close()
-
-        if error:
-            # on unsuccessful db insert, flash an error instead.
-            flash(message)
-        else:
-            # on successful db insert, flash success
-            flash(message)
-
+        artist = Artist.query.filter_by(id=id).first()
         return jsonify({
-            "success": not error,
-            "message": message
+            "id": artist.id,
+            "city": artist.city,
+            "name": artist.name,
+            "phone": artist.phone,
+            "state": artist.state,
+            "genres": artist.genres,
+            "website_link": artist.website_link,
+            "facebook_link": artist.facebook_link,
+            "seeking_venue": artist.seeking_venue,
+            "seeking_description": artist.seeking_description
         })
+
+    def fetch_all() -> list:
+        '''Fetcl all artists and return json format'''
+
+        artists = Artist.query.all()
+
+        formated_artists = [
+            jsonify({
+                "id": artist.id,
+                "city": artist.city,
+                "name": artist.name,
+                "phone": artist.phone,
+                "state": artist.state,
+                "genres": artist.genres,
+                "website_link": artist.website_link,
+                "facebook_link": artist.facebook_link,
+                "seeking_venue": artist.seeking_venue,
+                "seeking_description": artist.seeking_description
+            })
+
+            for artist in artists
+        ]
+
+        return formated_artists
