@@ -29,3 +29,16 @@ class Show(db.Model):
             "venue_id": show.venue_id,
             "start_time": show.start_time
         }
+
+    def fetch_all():
+        shows = Show.query.all()
+
+        return [
+            {
+                "artist_id": show.artist_id,
+                "venue_id": show.venue_id,
+                "start_time": show.start_time
+            }
+
+            for show in shows
+        ]
