@@ -107,7 +107,7 @@ class Artist(db.Model):
         '''Fetch and format artist with a given id'''
 
         artist = Artist.query.filter_by(id=id).first()
-        return jsonify({
+        return {
             "id": artist.id,
             "city": artist.city,
             "name": artist.name,
@@ -118,7 +118,7 @@ class Artist(db.Model):
             "facebook_link": artist.facebook_link,
             "seeking_venue": artist.seeking_venue,
             "seeking_description": artist.seeking_description
-        })
+        }
 
     def fetch_all() -> list:
         '''Fetcl all artists and return json format'''
