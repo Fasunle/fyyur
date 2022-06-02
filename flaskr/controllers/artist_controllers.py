@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 
 from flaskr.utils import get_genres, past_or_upcoming_shows
 from flaskr.models.artist_model import Artist
@@ -10,12 +10,67 @@ from flaskr.forms import ArtistForm, ShowForm
 
 
 def artist_controllers(app):
+    '''Artist Controllers'''
+
     @app.route('/artists')
     def artists():
-        # ? IMPROVEMENT: replace with real data returned from querying the database
+        # replace with real data returned from querying the database
 
-        data = Artist.query.all()
+        data = Artist.fetch_all()
+
         return render_template('pages/artists.html', artists=data)
+
+    @app.route('/artists/create', methods=['GET'])
+    def create_artist_form():
+        form = ArtistForm()
+        return render_template('forms/new_artist.html', form=form)
+
+    @app.route('/artists/create', methods=['POST'])
+    def create_artist_submission():
+        # called upon submitting the new artist listing form
+        # insert form data as a new Artist record in the db, instead
+        #
+        # Get the submitted form
+        artist = ArtistForm(request.form)
+        name = artist.name.data.title()
+
+        # create Artist if the form is validated -> properly submitted
+        if artist.validate():
+            Artist.create(artist, name)
+
+        return render_template('pages/home.html')
+
+    @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
+    def edit_artist(artist_id):
+        form = ArtistForm()
+
+        # populate form with fields from artist with ID <artist_id>
+        artist = Artist.fetch(artist_id)
+
+        return render_template('forms/edit_artist.html', form=form, artist=artist)
+
+    @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
+    def edit_artist_submission(artist_id):
+        # take values from the form submitted, and update existing
+        # artist record with ID <artist_id> using the new attributes
+
+        artist = ArtistForm(request.form)
+        old_artist_data = Artist.query.get(id=artist_id)
+
+        # update the data with form data (artist)
+        old_artist_data.name = artist.name.data.lower()
+        old_artist_data.city = artist.city.data
+        old_artist_data.phone = artist.phone.data
+        old_artist_data.state = artist.state.data
+        old_artist_data.genres = artist.genres.data
+        old_artist_data.image_link = artist.image_link.data
+        old_artist_data.facebook_link = artist.facebook_link.data
+        old_artist_data.seeking_venue = artist.seeking_venue.data
+        old_artist_data.seeking_description = artist.seeking_description.data
+
+        Artist.update(old_artist_data, artist_id)
+
+        return redirect(url_for('show_artist', artist_id=artist_id))
 
     @app.route('/artists/search', methods=['POST'])
     def search_artists():
@@ -118,109 +173,3 @@ def artist_controllers(app):
 
     #  Update
     #  ----------------------------------------------------------------
-
-    @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
-    def edit_artist(artist_id):
-        form = ArtistForm()
-
-        # populate form with fields from artist with ID <artist_id>
-        artist = Artist.query.filter_by(id=artist_id).first()
-        artist.name.title()
-
-        return render_template('forms/edit_artist.html', form=form, artist=artist)
-
-    @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
-    def edit_artist_submission(artist_id):
-        # take values from the form submitted, and update existing
-        # artist record with ID <artist_id> using the new attributes
-
-        artist = ArtistForm(request.form)
-        error = False
-
-        try:
-            old_artist_data = Artist.query.filter_by(id=artist_id).first()
-
-            # update the data with form data (artist)
-            old_artist_data.name = artist.name.data.lower()
-            old_artist_data.city = artist.city.data
-            old_artist_data.phone = artist.phone.data
-            old_artist_data.state = artist.state.data
-            old_artist_data.genres = artist.genres.data
-            old_artist_data.image_link = artist.image_link.data
-            old_artist_data.facebook_link = artist.facebook_link.data
-            old_artist_data.seeking_venue = artist.seeking_venue.data
-            old_artist_data.seeking_description = artist.seeking_description.data
-
-            db.session.add(old_artist_data)
-            db.session.commit()
-        except:
-            db.session.rollback()
-            error = True
-        finally:
-            db.session.close()
-
-        if error:
-            flash("Unable to edit the artist with id " + str(artist_id))
-        else:
-            flash("Editted the artist with id " +
-                  str(artist_id) + " successfully")
-
-        return redirect(url_for('show_artist', artist_id=artist_id))
-
-    #  Create Artist
-    #  ----------------------------------------------------------------
-
-    @app.route('/artists/create', methods=['GET'])
-    def create_artist_form():
-        form = ArtistForm()
-        return render_template('forms/new_artist.html', form=form)
-
-    @app.route('/artists/create', methods=['POST'])
-    def create_artist_submission():
-        # called upon submitting the new artist listing form
-        # insert form data as a new Artist record in the db, instead
-        #
-        # Get the submitted form
-        artist = ArtistForm(request.form)
-        error = False
-        name = artist.name.data.title()
-
-        # create Artist if the form is validated -> properly submitted
-        if artist.validate():
-            try:
-                db.session.add(
-                    Artist(
-                        name=artist.name.data.lower(),
-                        city=artist.city.data,
-                        genres=artist.genres.data,
-                        phone=artist.phone.data,
-                        state=artist.state.data,
-                        facebook_link=artist.facebook_link.data,
-                        website_link=artist.website_link.data,
-                        image_link=artist.image_link.data,
-                        seeking_venue=artist.seeking_venue.data,
-                        seeking_description=artist.seeking_description.data
-                    )
-                )
-                # persist the change
-                db.session.commit()
-            except:
-                # error occured
-                error = True
-                db.session.rollback()
-            finally:
-                db.session.close()
-
-            # modify data to be the data object returned from db insertion
-            data = {name}
-
-            if error:
-                # on unsuccessful db insert, flash an error instead.
-                flash('An error occurred. Artist ' +
-                      data.name + ' could not be listed.')
-            else:
-                # on successful db insert, flash success
-                flash('Artist ' + request.form['name'] +
-                      ' was successfully listed!')
-
-        return render_template('pages/home.html')
