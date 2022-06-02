@@ -107,7 +107,7 @@ def artist_controllers(app):
         all_artists = []
         each_artist = {}
 
-        artists = Artist.query.all()    # get all artists
+        artists = Artist.fetch_all()    # get all artists
 
         # loop through all artists
         for artist in artists:
