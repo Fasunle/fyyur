@@ -46,29 +46,12 @@ def show_controllers(app):
         show = ShowForm(request.form)
 
         if show.validate():
-            error = False
-            try:
-                db.session.add(
-                    Show(
-                        artist_id=show.artist_id.data,
-                        venue_id=show.venue_id.data,
-                        start_time=show.start_time.data
-                    )
+            Show.create(
+                Show(
+                    artist_id=show.artist_id.data,
+                    venue_id=show.venue_id.data,
+                    start_time=show.start_time.data
                 )
-                db.session.commit()
-            except:
-                db.session.rollback()
-                error = True
-            finally:
-                db.session.close()
-
-            # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-            # on unsuccessful db insert, flash an error instead.
-            if error:
-                flash('An error occurred. Show could not be listed.')
-
-            # on successful db insert, flash success
-            else:
-                flash('Show was successfully listed!')
+            )
 
         return render_template('pages/home.html')
