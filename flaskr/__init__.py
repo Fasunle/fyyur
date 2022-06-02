@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_moment import Moment
 
 
 from flaskr.controllers import controllers
@@ -12,6 +13,7 @@ def create_app():
     # CONFIGURATIONS
     app.config.from_pyfile("config.py")
     app.jinja_env.filters['datetime'] = format_datetime
+    Moment(app)
     setup_db(app)
     # controllers
     controllers(app)
