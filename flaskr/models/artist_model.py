@@ -126,7 +126,7 @@ class Artist(db.Model):
         artists = Artist.query.all()
 
         formated_artists = [
-            jsonify({
+            {
                 "id": artist.id,
                 "city": artist.city,
                 "name": artist.name,
@@ -137,7 +137,7 @@ class Artist(db.Model):
                 "facebook_link": artist.facebook_link,
                 "seeking_venue": artist.seeking_venue,
                 "seeking_description": artist.seeking_description
-            })
+            }
 
             for artist in artists
         ]
