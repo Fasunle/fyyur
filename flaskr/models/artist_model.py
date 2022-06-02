@@ -1,4 +1,9 @@
+import sys
+from flask import jsonify, request
 from flaskr.models import db
+from flaskr.models.show_model import Show
+from flaskr.models.venue_model import Venue
+from flaskr.utils import past_or_upcoming_shows
 
 
 class Artist(db.Model):
@@ -25,3 +30,26 @@ class Artist(db.Model):
     seeking_venue = db.Column(db.Boolean, default=False, nullable=False)
     seeking_description = db.Column(db.String(120), nullable=False)
     show = db.relationship("Show", cascade="all, delete-orphan")
+
+    def fetch_all() -> list:
+        '''Fetcl all artists and return json format'''
+        artists = Artist.query.all()
+
+        formated_artists = [
+            jsonify({
+                "id": artist.id,
+                "city": artist.city,
+                "name": artist.name,
+                "phone": artist.phone,
+                "state": artist.state,
+                "genres": artist.genres,
+                "website_link": artist.website_link,
+                "facebook_link": artist.facebook_link,
+                "seeking_venue": artist.seeking_venue,
+                "seeking_description": artist.seeking_description
+            })
+
+            for artist in artists
+        ]
+
+        return formated_artists
