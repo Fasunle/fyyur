@@ -23,14 +23,14 @@ def get_genres(genres: str = "") -> list:
         return result
 
     # if genres is of format {Classical, "Afrobeat Pop", "Hip Hop"}
-    if genres[0] is '{':
+    if genres[0] == '{':
 
         _genres = genres[1:-1]
         genre_list = _genres.split(",")
 
         for x in genre_list:
 
-            if x[0] is '"':
+            if x[0] == '"':
                 result.append(x[1:-1])
             else:
                 result.append(x)
