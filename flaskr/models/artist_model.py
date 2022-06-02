@@ -143,3 +143,40 @@ class Artist(db.Model):
         ]
 
         return formated_artists
+
+    def update(self, id):
+        """
+            Update an Artist
+
+            Args:
+                name (string): Name of the artist. It is just used for flash message
+
+            Returns:
+                {
+                    "success": error,
+                    "message": message
+                }
+        """
+        error = False
+        message = ""
+
+        try:
+            db.session.add(self)
+            db.session.commit()
+            message = "Editted the artist with id " + str(id) + " successfully"
+        except:
+            error = True
+            message = "Unable to edit the artist with id " + str(id)
+            db.session.rollback()
+        finally:
+            db.session.close()
+
+        if error:
+            flash(message)
+        else:
+            flash(message)
+
+        return jsonify({
+            "success": not error,
+            "message": message
+        })
