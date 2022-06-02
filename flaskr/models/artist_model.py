@@ -71,3 +71,24 @@ class Artist(db.Model):
             "seeking_venue": artist.seeking_venue,
             "seeking_description": artist.seeking_description
         })
+
+    def delete(id):
+        '''Delete an artist with a specific id'''
+
+        artist = Artist.query.get(id)
+        error = False
+        message = ""
+
+        try:
+            db.session.delete(artist)
+            # db.session.commit()
+            message = f"Artist with {id} was deleted!"
+        except:
+            message = f"Unable to delete Artist with {id}"
+            db.session.rollback()
+            error = True
+
+        return jsonify({
+            "success": not error,
+            "message": message
+        })
