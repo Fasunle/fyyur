@@ -18,3 +18,14 @@ class Show(db.Model):
     venue_id = db.Column(
         db.Integer, db.ForeignKey("Venue.id"), nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.now())
+
+    def fetch(id):
+        '''Fetches a single show'''
+
+        show = Show.query.get(id)
+
+        return {
+            "artist_id": show.artist_id,
+            "venue_id": show.venue_id,
+            "start_time": show.start_time
+        }
