@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, jsonify, redirect, render_template, request, url_for
 
 from flaskr.utils import get_genres, past_or_upcoming_shows
 from flaskr.models.artist_model import Artist
@@ -10,11 +10,14 @@ from flaskr.forms import ArtistForm, ShowForm
 
 
 def artist_controllers(app):
+    '''Artist Controllers'''
+
     @app.route('/artists')
     def artists():
-        # ? IMPROVEMENT: replace with real data returned from querying the database
+        # replace with real data returned from querying the database
 
-        data = Artist.query.all()
+        data = Artist.fetch_all()
+
         return render_template('pages/artists.html', artists=data)
 
     @app.route('/artists/search', methods=['POST'])
@@ -124,8 +127,7 @@ def artist_controllers(app):
         form = ArtistForm()
 
         # populate form with fields from artist with ID <artist_id>
-        artist = Artist.query.filter_by(id=artist_id).first()
-        artist.name.title()
+        artist = Artist.fetch(artist_id)
 
         return render_template('forms/edit_artist.html', form=form, artist=artist)
 
