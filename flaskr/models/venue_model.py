@@ -83,7 +83,7 @@ class Venue(db.Model):
 
         try:
             db.session.delete(venue)
-            # db.session.commit()
+            db.session.commit()
             message = f"Venue with {id} was deleted!"
         except:
             message = f"Unable to delete Venue with {id}"
