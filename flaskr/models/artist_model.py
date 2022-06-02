@@ -1,9 +1,5 @@
-import sys
-from flask import jsonify, request
+from flask import flash, jsonify
 from flaskr.models import db
-from flaskr.models.show_model import Show
-from flaskr.models.venue_model import Venue
-from flaskr.utils import past_or_upcoming_shows
 
 
 class Artist(db.Model):
@@ -87,6 +83,45 @@ class Artist(db.Model):
             message = f"Unable to delete Artist with {id}"
             db.session.rollback()
             error = True
+
+        return jsonify({
+            "success": not error,
+            "message": message
+        })
+
+    def create(self, name: str):
+        """
+            Create a new Artist
+
+            Args:
+                name (string): Name of the artist. It is just used for flash message
+
+            Returns:
+                {
+                    "success": error,
+                    "message": message
+                }
+        """
+        error = False
+        message = ""
+
+        try:
+            db.session.add(self)
+            db.session.commit()
+            message = 'Artist ' + name + ' was successfully listed!'
+        except:
+            error = True
+            message = 'An error occurred. Artist ' + name + ' could not be listed.'
+            db.session.rollback()
+        finally:
+            db.session.close()
+
+        if error:
+            # on unsuccessful db insert, flash an error instead.
+            flash(message)
+        else:
+            # on successful db insert, flash success
+            flash(message)
 
         return jsonify({
             "success": not error,
