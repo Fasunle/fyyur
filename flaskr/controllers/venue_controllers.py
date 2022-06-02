@@ -178,42 +178,22 @@ def venue_controllers(app):
         # modify data to be the data object returned from db insertion
         venue = VenueForm(request.form)
         name = venue.name.data
-        error = False
 
         if venue.validate():
-            try:
-                db.session.add(
-                    Venue(
-                        name=venue.name.data.lower(),
-                        city=venue.city.data,
-                        genres=venue.genres.data,
-                        phone=venue.phone.data,
-                        state=venue.state.data,
-                        address=venue.address.data,
-                        facebook_link=venue.facebook_link.data,
-                        website_link=venue.website_link.data,
-                        image_link=venue.image_link.data,
-                        seeking_talent=venue.seeking_talent.data,
-                        seeking_description=venue.seeking_description.data
-                    )
-                )
-                db.session.commit()
-            except:
-                db.session.rollback()
-                error = True
-            finally:
-                db.session.close()
+            Venue.create(Venue(
+                name=venue.name.data.lower(),
+                city=venue.city.data,
+                genres=venue.genres.data,
+                phone=venue.phone.data,
+                state=venue.state.data,
+                address=venue.address.data,
+                facebook_link=venue.facebook_link.data,
+                website_link=venue.website_link.data,
+                image_link=venue.image_link.data,
+                seeking_talent=venue.seeking_talent.data,
+                seeking_description=venue.seeking_description.data
+            ), name)
 
-            data = {name}
-
-            if error:
-                # on unsuccessful db insert, flash an error instead.
-                flash('An error occurred. Venue ' +
-                      data.name + ' could not be listed.')
-            else:
-                # on successful db insert, flash success
-                flash('Venue ' + request.form['name'] +
-                      ' was successfully listed!')
         return render_template('pages/home.html')
 
     @app.route('/venues/<int:venue_id>', methods=['DELETE'])
